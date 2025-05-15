@@ -1,96 +1,113 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import "./edit.css"; // Link to external CSS
 
 function Edit() {
-  const [data, setData] = useState([]);
+  const [values, setValues] = useState({
+    name: "",
+    email: "",
+    gender: "",
+    age: "",
+  });
+
   const { id } = useParams();
+  const navigate = useNavigate();
+
   useEffect(() => {
     axios
       .get(`/get_student/${id}`)
       .then((res) => {
-        setData(res.data);
+        const student = Array.isArray(res.data) ? res.data[0] : res.data;
+        setValues({
+          name: student.name,
+          email: student.email,
+          gender: student.gender,
+          age: student.age,
+        });
       })
       .catch((err) => console.log(err));
   }, [id]);
 
-  const navigate = useNavigate();
-
   function handleSubmit(e) {
     e.preventDefault();
-
     axios
-      .post(`/edit_user/${id}`, data[0])
+      .post(`/edit_user/${id}`, values)
       .then((res) => {
         navigate("/");
-        console.log(res);
       })
       .catch((err) => console.log(err));
   }
 
   return (
-    <div className="container-fluid vw-100 vh-100 bg-primary">
-      <h1>User {id}</h1>
-      <Link to="/" className="btn btn-success">
-        Back
-      </Link>
-      {data.map((student) => {
-        return (
-          <form onSubmit={handleSubmit}>
-            <div className="form-group my-3">
-              <label htmlFor="name">Name</label>
-              <input
-                value={student.name}
-                type="text"
-                name="name"
-                required
-                onChange={(e) =>
-                  setData([{ ...data[0], name: e.target.value }])
-                }
-              />
-            </div>
-            <div className="form-group my-3">
-              <label htmlFor="email">Email</label>
-              <input
-                value={student.email}
-                type="email"
-                name="email"
-                required
-                onChange={(e) =>
-                  setData([{ ...data[0], email: e.target.value }])
-                }
-              />
-            </div>
-            <div className="form-group my-3">
-              <label htmlFor="gender">Gender</label>
-              <input
-                value={student.gender}
-                type="text"
-                name="gender"
-                required
-                onChange={(e) =>
-                  setData([{ ...data[0], gender: e.target.value }])
-                }
-              />
-            </div>
-            <div className="form-group my-3">
-              <label htmlFor="age">Age</label>
-              <input
-                value={student.age}
-                type="number"
-                name="age"
-                required
-                onChange={(e) => setData([{ ...data[0], age: e.target.value }])}
-              />
-            </div>
-            <div className="form-group my-3">
-              <button type="submit" className="btn btn-success">
-                Save
-              </button>
-            </div>
-          </form>
-        );
-      })}
+    <div className="edit-page">
+      <div className="card shadow-lg p-4 edit-card bg-light">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h3 className="text-primary">Edit Student</h3>
+          <Link to="/" className="btn btn-success">
+            Home
+          </Link>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group my-2">
+            <label htmlFor="name">Name</label>
+            <input
+              value={values.name}
+              type="text"
+              className="form-control"
+              name="name"
+              required
+              onChange={(e) =>
+                setValues({ ...values, name: e.target.value })
+              }
+            />
+          </div>
+          <div className="form-group my-2">
+            <label htmlFor="email">Email</label>
+            <input
+              value={values.email}
+              type="email"
+              className="form-control"
+              name="email"
+              required
+              onChange={(e) =>
+                setValues({ ...values, email: e.target.value })
+              }
+            />
+          </div>
+          <div className="form-group my-2">
+            <label htmlFor="gender">Gender</label>
+            <input
+              value={values.gender}
+              type="text"
+              className="form-control"
+              name="gender"
+              required
+              onChange={(e) =>
+                setValues({ ...values, gender: e.target.value })
+              }
+            />
+          </div>
+          <div className="form-group my-2">
+            <label htmlFor="age">Age</label>
+            <input
+              value={values.age}
+              type="number"
+              className="form-control"
+              name="age"
+              required
+              onChange={(e) =>
+                setValues({ ...values, age: e.target.value })
+              }
+            />
+          </div>
+          <div className="form-group text-center my-3">
+            <button type="submit" className="btn btn-primary px-4">
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

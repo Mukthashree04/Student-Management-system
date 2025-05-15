@@ -1,59 +1,98 @@
-import React, { useState } from 'react'
-import axios from 'axios'
-import {Link, useNavigate} from 'react-router-dom'
+import React, { useState } from 'react';
+import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+import './create.css'; // Styling separated for neatness
 
 function Create() {
-    const [values, setValues] = useState({
-        name: '',
-        email: '',
-        age: '',
-        gender: ''
-    })
+  const [values, setValues] = useState({
+    name: '',
+    email: '',
+    age: '',
+    gender: ''
+  });
 
-    const navigate = useNavigate()
+  const navigate = useNavigate();
 
-    function handleSubmit(e){
-        e.preventDefault()
+  function handleSubmit(e) {
+    e.preventDefault();
+    axios.post('/add_user', values)
+      .then(res => {
+        console.log(res);
+        navigate('/');
+      })
+      .catch(err => console.log(err));
+  }
 
-        axios.post('/add_user', values)
-        .then((res)=>{
-            
-            navigate('/')
-            console.log(res)
-        })
-        .catch((err)=>console.log(err))
-    }
   return (
-    <div className='container vh-100 vw-100 bg-primary'>
-        <div className='row'>
-            <h3>Add Student</h3>
-            <div className='d-flex justify-content-end'>
-                <Link to='/' class='btn btn-success'>Home</Link>
-            </div>
-            <form onSubmit={handleSubmit}>
-                <div className='form-group my-3'>
-                    <label htmlFor='name'>Name</label>
-                    <input type='text' name='name' required onChange={(e)=> setValues({...values, name: e.target.value})} />
-                </div>
-                <div className='form-group my-3'>
-                    <label htmlFor='email'>Email</label>
-                    <input type='email' name='email' required onChange={(e)=> setValues({...values, email: e.target.value})} />
-                </div>
-                <div className='form-group my-3'>
-                    <label htmlFor='gender'>Gender</label>
-                    <input type='text' name='gender' required onChange={(e)=> setValues({...values, gender: e.target.value})} />
-                </div>
-                <div className='form-group my-3'>
-                    <label htmlFor='age'>Age</label>
-                    <input type='number' name='age' required onChange={(e)=> setValues({...values, age: e.target.value})} />
-                </div>
-                <div className='form-group my-3'>
-                    <button type='submit' className='btn btn-success'>Save</button>
-                </div>
-            </form>
+    <div className='form-background d-flex justify-content-center align-items-center'>
+      <div className='form-container shadow p-4 bg-white rounded'>
+        <div className='d-flex justify-content-between align-items-center mb-4'>
+          <h3 className='text-primary'>Add Student</h3>
+          <Link to='/' className='btn btn-outline-primary'>Home</Link>
         </div>
+
+        <form onSubmit={handleSubmit}>
+          <table className='table table-borderless'>
+            <tbody>
+              <tr>
+                <th className='text-secondary align-middle' style={{ width: '25%' }}>Name</th>
+                <td>
+                  <input
+                    type='text'
+                    name='name'
+                    className='form-control'
+                    required
+                    onChange={(e) => setValues({ ...values, name: e.target.value })}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <th className='text-secondary align-middle'>Email</th>
+                <td>
+                  <input
+                    type='email'
+                    name='email'
+                    className='form-control'
+                    required
+                    onChange={(e) => setValues({ ...values, email: e.target.value })}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <th className='text-secondary align-middle'>Gender</th>
+                <td>
+                  <input
+                    type='text'
+                    name='gender'
+                    className='form-control'
+                    required
+                    onChange={(e) => setValues({ ...values, gender: e.target.value })}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <th className='text-secondary align-middle'>Age</th>
+                <td>
+                  <input
+                    type='number'
+                    name='age'
+                    className='form-control'
+                    required
+                    onChange={(e) => setValues({ ...values, age: e.target.value })}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td colSpan='2' className='text-center'>
+                  <button type='submit' className='btn btn-primary px-4'>Save</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </form>
+      </div>
     </div>
-  )
+  );
 }
 
-export default Create
+export default Create;

@@ -1,48 +1,51 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
+import "./read.css";           // ← external styles
 
 function Read() {
-  const [data, setData] = useState([]);
+  const [student, setStudent] = useState(null);
   const { id } = useParams();
+
   useEffect(() => {
     axios
       .get(`/get_student/${id}`)
-      .then((res) => {
-        setData(res.data);
-      })
+      .then((res) => setStudent(res.data))      // backend already returns one object
       .catch((err) => console.log(err));
   }, [id]);
+
   return (
-    <div className="container-fluid vw-100 vh-100 bg-primary">
-      <h1>User {id}</h1>
-      <Link to="/" className="btn btn-success">Back</Link>
-      {data.map((student) => {
-        return (
+    <div className="read-page">
+      <div className="card shadow-lg p-4 read-card bg-light">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h3 className="text-primary mb-0">Student Details</h3>
+          <Link to="/" className="btn btn-success btn-sm">
+            Home
+          </Link>
+        </div>
+
+        {student ? (
           <ul className="list-group">
             <li className="list-group-item">
-              <b>ID: </b>
-              {student["id"]}
+              <strong>ID:</strong> {student._id}
             </li>
             <li className="list-group-item">
-              <b>Name: </b>
-              {student["name"]}
+              <strong>Name:</strong> {student.name}
             </li>
             <li className="list-group-item">
-              <b>Email: </b>
-              {student["email"]}
+              <strong>Email:</strong> {student.email}
             </li>
             <li className="list-group-item">
-              <b>Age: </b>
-              {student["age"]}
+              <strong>Age:</strong> {student.age}
             </li>
             <li className="list-group-item">
-              <b>Gender: </b>
-              {student["gender"]}
+              <strong>Gender:</strong> {student.gender}
             </li>
           </ul>
-        );
-      })}
+        ) : (
+          <div className="text-muted text-center">Loading…</div>
+        )}
+      </div>
     </div>
   );
 }

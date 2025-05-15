@@ -1,0 +1,14 @@
+.edit-page {
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #f0f2f5, #d9e4f5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .edit-card {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 15px;
+  }
+  

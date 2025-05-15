@@ -1,81 +1,77 @@
 const express = require("express");
-const mysql = require("mysql");
+const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
+const Student = require("./models/Student");
+
 const app = express();
+const port = 5005;
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 app.use(express.json());
 
-const port = 5005;
-
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "Manish@20",
-  database: "students",
+// Connect to MongoDB
+mongoose.connect("mongodb://localhost:27017/students", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  console.log("✅ Connected to MongoDB");
+}).catch(err => {
+  console.error("❌ MongoDB connection error:", err);
 });
 
-// Route: Add user
-app.post("/add_user", (req, res) => {
-  const sql =
-    "INSERT INTO student_details (`name`,`email`,`age`,`gender`) VALUES (?, ?, ?, ?)";
-  const values = [req.body.name, req.body.email, req.body.age, req.body.gender];
-  db.query(sql, values, (err, result) => {
-    if (err) return res.json({ message: "Something unexpected has occurred: " + err });
-    return res.json({ success: "Student added successfully" });
-  });
+// Add a new student
+app.post("/add_user", async (req, res) => {
+  try {
+    const newStudent = new Student(req.body);
+    await newStudent.save();
+    res.json({ success: "Student added successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Something unexpected occurred: " + err });
+  }
 });
 
-// Route: Get all students
-app.get("/students", (req, res) => {
-  const sql = "SELECT * FROM student_details";
-  db.query(sql, (err, result) => {
-    if (err) return res.status(500).json({ message: "Server error" });
-    return res.json(result);
-  });
+// Get all students
+app.get("/students", async (req, res) => {
+  try {
+    const students = await Student.find();
+    res.json(students);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
-// Route: Get student by ID
-app.get("/get_student/:id", (req, res) => {
-  const id = req.params.id;
-  const sql = "SELECT * FROM student_details WHERE `id`= ?";
-  db.query(sql, [id], (err, result) => {
-    if (err) return res.status(500).json({ message: "Server error" });
-    return res.json(result);
-  });
+// Get a single student by ID
+app.get("/get_student/:id", async (req, res) => {
+  try {
+    const student = await Student.findById(req.params.id);
+    res.json(student);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
-// Route: Edit user
-app.post("/edit_user/:id", (req, res) => {
-  const id = req.params.id;
-  const sql =
-    "UPDATE student_details SET `name`=?, `email`=?, `age`=?, `gender`=? WHERE id=?";
-  const values = [
-    req.body.name,
-    req.body.email,
-    req.body.age,
-    req.body.gender,
-    id,
-  ];
-  db.query(sql, values, (err, result) => {
-    if (err) return res.json({ message: "Something unexpected has occurred: " + err });
-    return res.json({ success: "Student updated successfully" });
-  });
+// Update a student
+app.post("/edit_user/:id", async (req, res) => {
+  try {
+    await Student.findByIdAndUpdate(req.params.id, req.body);
+    res.json({ success: "Student updated successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Something unexpected occurred: " + err });
+  }
 });
 
-// Route: Delete user
-app.delete("/delete/:id", (req, res) => {
-  const id = req.params.id;
-  const sql = "DELETE FROM student_details WHERE id=?";
-  db.query(sql, [id], (err, result) => {
-    if (err) return res.json({ message: "Something unexpected has occurred: " + err });
-    return res.json({ success: "Student deleted successfully" }); // fixed message
-  });
+// Delete a student
+app.delete("/delete/:id", async (req, res) => {
+  try {
+    await Student.findByIdAndDelete(req.params.id);
+    res.json({ success: "Student deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Something unexpected occurred: " + err });
+  }
 });
 
-// Start server
 app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+  console.log(`🚀 Server listening on port ${port}`);
 });
