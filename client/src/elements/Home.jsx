@@ -40,9 +40,14 @@ function Home() {
       <div className="card p-4 mx-auto shadow-lg" style={{ maxWidth: '1000px', backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '20px' }}>
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h3 className="text-primary">Student Records</h3>
-          <Link className="btn btn-success" to="/create">
-            ➕ Add Student
-          </Link>
+          <div className="d-flex gap-2">
+            <Link className="btn btn-outline-secondary" to="/classrooms">
+              Classrooms
+            </Link>
+            <Link className="btn btn-success" to="/create">
+              ➕ Add Student
+            </Link>
+          </div>
         </div>
 
         <div className="table-responsive">
