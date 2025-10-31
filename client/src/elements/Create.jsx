@@ -10,17 +10,37 @@ function Create() {
     age: '',
     gender: ''
   });
+  const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const navigate = useNavigate();
 
+  function validate(v) {
+    const next = {};
+    if (!v.name || v.name.trim().length < 2) next.name = 'Name must be at least 2 characters';
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+    if (!emailRe.test(v.email)) next.email = 'Enter a valid email';
+    const ageNum = Number(v.age);
+    if (!Number.isFinite(ageNum) || ageNum <= 0) next.age = 'Age must be a positive number';
+    if (!v.gender) next.gender = 'Gender is required';
+    return next;
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
-    axios.post('/add_user', values)
-      .then(res => {
-        console.log(res);
+    const vErrors = validate(values);
+    setErrors(vErrors);
+    setSubmitError('');
+    if (Object.keys(vErrors).length > 0) return;
+
+    setSubmitting(true);
+    axios.post('/add_user', { ...values, age: Number(values.age) })
+      .then(() => {
         navigate('/');
       })
-      .catch(err => console.log(err));
+      .catch(() => setSubmitError('Failed to save student'))
+      .finally(() => setSubmitting(false));
   }
 
   return (
@@ -31,7 +51,13 @@ function Create() {
           <Link to='/' className='btn btn-outline-primary'>Home</Link>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        {submitError && (
+          <div className='alert alert-danger py-2' role='alert'>
+            {submitError}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} noValidate>
           <table className='table table-borderless'>
             <tbody>
               <tr>
@@ -40,10 +66,11 @@ function Create() {
                   <input
                     type='text'
                     name='name'
-                    className='form-control'
+                    className={`form-control ${errors.name ? 'is-invalid' : ''}`}
                     required
                     onChange={(e) => setValues({ ...values, name: e.target.value })}
                   />
+                  {errors.name && <div className='invalid-feedback'>{errors.name}</div>}
                 </td>
               </tr>
               <tr>
@@ -52,10 +79,11 @@ function Create() {
                   <input
                     type='email'
                     name='email'
-                    className='form-control'
+                    className={`form-control ${errors.email ? 'is-invalid' : ''}`}
                     required
                     onChange={(e) => setValues({ ...values, email: e.target.value })}
                   />
+                  {errors.email && <div className='invalid-feedback'>{errors.email}</div>}
                 </td>
               </tr>
               <tr>
@@ -64,10 +92,11 @@ function Create() {
                   <input
                     type='text'
                     name='gender'
-                    className='form-control'
+                    className={`form-control ${errors.gender ? 'is-invalid' : ''}`}
                     required
                     onChange={(e) => setValues({ ...values, gender: e.target.value })}
                   />
+                  {errors.gender && <div className='invalid-feedback'>{errors.gender}</div>}
                 </td>
               </tr>
               <tr>
@@ -76,15 +105,18 @@ function Create() {
                   <input
                     type='number'
                     name='age'
-                    className='form-control'
+                    className={`form-control ${errors.age ? 'is-invalid' : ''}`}
                     required
                     onChange={(e) => setValues({ ...values, age: e.target.value })}
                   />
+                  {errors.age && <div className='invalid-feedback'>{errors.age}</div>}
                 </td>
               </tr>
               <tr>
                 <td colSpan='2' className='text-center'>
-                  <button type='submit' className='btn btn-primary px-4'>Save</button>
+                  <button type='submit' className='btn btn-primary px-4' disabled={submitting}>
+                    {submitting ? 'Saving…' : 'Save'}
+                  </button>
                 </td>
               </tr>
             </tbody>

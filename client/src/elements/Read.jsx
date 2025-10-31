@@ -5,13 +5,16 @@ import "./read.css";           // ← external styles
 
 function Read() {
   const [student, setStudent] = useState(null);
+  const [error, setError] = useState("");
   const { id } = useParams();
 
   useEffect(() => {
+    setError("");
+    setStudent(null);
     axios
       .get(`/get_student/${id}`)
       .then((res) => setStudent(res.data))      // backend already returns one object
-      .catch((err) => console.log(err));
+      .catch(() => setError('Failed to load student'));
   }, [id]);
 
   return (
@@ -23,6 +26,10 @@ function Read() {
             Home
           </Link>
         </div>
+
+        {error && (
+          <div className="alert alert-danger py-2" role="alert">{error}</div>
+        )}
 
         {student ? (
           <ul className="list-group">
@@ -42,9 +49,12 @@ function Read() {
               <strong>Gender:</strong> {student.gender}
             </li>
           </ul>
-        ) : (
-          <div className="text-muted text-center">Loading…</div>
-        )}
+        ) : !error ? (
+          <div className="text-muted text-center py-3">
+            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Loading…
+          </div>
+        ) : null}
       </div>
     </div>
   );

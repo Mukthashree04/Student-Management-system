@@ -5,6 +5,8 @@ import Home from "./elements/Home";
 import Create from "./elements/Create";
 import Edit from "./elements/Edit";
 import Read from "./elements/Read";
+import Classrooms from "./elements/Classrooms";
+import Room from "./elements/Room";
 function App() {
   return (
     <BrowserRouter>
@@ -13,6 +15,8 @@ function App() {
         <Route path="/create" element={<Create />} />
         <Route path="/edit/:id" element={<Edit />} />
         <Route path="/read/:id" element={<Read />} />
+        <Route path="/classrooms" element={<Classrooms />} />
+        <Route path="/room/:code" element={<Room />} />
       </Routes>
     </BrowserRouter>
   );
