@@ -7,6 +7,8 @@ import Edit from "./elements/Edit";
 import Read from "./elements/Read";
 import Classrooms from "./elements/Classrooms";
 import Room from "./elements/Room";
+import ClassroomStudents from "./elements/ClassroomStudents"; // ✅ keep this from feature branch
+
 function App() {
   return (
     <BrowserRouter>
@@ -16,6 +18,7 @@ function App() {
         <Route path="/edit/:id" element={<Edit />} />
         <Route path="/read/:id" element={<Read />} />
         <Route path="/classrooms" element={<Classrooms />} />
+        <Route path="/classrooms/:code/students" element={<ClassroomStudents />} /> {/* ✅ new route */}
         <Route path="/room/:code" element={<Room />} />
       </Routes>
     </BrowserRouter>

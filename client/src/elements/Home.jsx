@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import homeImg from './home.png'; 
+import homeImg from './home.png';
 
 function Home() {
   const [data, setData] = useState([]);
@@ -19,10 +19,8 @@ function Home() {
       setError(null);
       axios
         .get('/students')
-        .then((res) => {
-          setData(res.data);
-        })
-        .catch((err) => setError('Failed to load students'))
+        .then((res) => setData(res.data))
+        .catch(() => setError('Failed to load students'))
         .finally(() => setLoading(false));
     }
   }, [deleted]);
@@ -72,18 +70,27 @@ function Home() {
     return 0;
   });
 
-  const sortIndicator = (key) => (sortKey === key ? (sortDir === 'asc' ? ' ▲' : ' ▼') : '');
+  const sortIndicator = (key) =>
+    sortKey === key ? (sortDir === 'asc' ? ' ▲' : ' ▼') : '';
 
   return (
     <div
       className="container-fluid bg-light min-vh-100 py-4"
       style={{
         backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${homeImg})`,
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
       }}
     >
-      <div className="card p-4 mx-auto shadow-lg" style={{ maxWidth: '1000px', backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '20px' }}>
+      <div
+        className="card p-4 mx-auto shadow-lg"
+        style={{
+          maxWidth: '1000px',
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          borderRadius: '20px',
+        }}
+      >
+        {/* Header with search + buttons */}
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
           <h3 className="text-primary mb-0">Student Records</h3>
           <div className="d-flex gap-2 w-100 w-md-auto">
@@ -113,11 +120,19 @@ function Home() {
           <table className="table table-bordered table-striped table-hover">
             <thead className="table-dark text-center">
               <tr>
-                <th role="button" onClick={() => requestSort('name')} title="Sort by name">
+                <th
+                  role="button"
+                  onClick={() => requestSort('name')}
+                  title="Sort by name"
+                >
                   Name{sortIndicator('name')}
                 </th>
                 <th>Email</th>
-                <th role="button" onClick={() => requestSort('age')} title="Sort by age">
+                <th
+                  role="button"
+                  onClick={() => requestSort('age')}
+                  title="Sort by age"
+                >
                   Age{sortIndicator('age')}
                 </th>
                 <th>Gender</th>
@@ -127,7 +142,9 @@ function Home() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="5" className="text-center text-muted">Loading…</td>
+                  <td colSpan="5" className="text-center text-muted">
+                    Loading…
+                  </td>
                 </tr>
               ) : sortedData.length > 0 ? (
                 sortedData.map((student) => (
